@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,10 +38,11 @@ public class GamePage extends AppCompatActivity {
 
     //Image
     private ImageView trashCan, ivFish, ivBanana, ivCan, ivChips, ivTire, ivLeaf, ivMilk, ivPaper, ivTissue, ivPlastic, ivCork, ivStyro,
-            bomb, picStart, picAchievements, picRetry, picExit, picAbout, picBio, picNonBio, picPause, heart3,
-            heart4, heart5, btnYes, btnNo, btnRestart, btnPlay;
-    private Drawable leftBio, rightBio, leftNonBio, rightNonBio, life3, DrEgg;
-    private GifImageView plusPoints, plusLife, lifeTwoGif, lifeThreeGif, gifKeyboard, gifJunk, swipeRight;
+            bomb, picStart, picAchievements, picRetry, picExit, picAbout, picBio, picNonBio, picPause, heart3, btnExit, over,
+            heart4, heart5, btnYes, btnNo, btnRestart, btnPlay, settingsInGame;
+    private Drawable leftBio, rightBio, leftNonBio, rightNonBio, life3, life1, life2, life11, life22, DrEgg;
+    private GifImageView plusPoints, plusLife, lifeTwoGif, lifeThreeGif, gifKeyboard, gifJunk, gameFrame2, gameFrame1;
+    Toast toast;
 
     //Trash Can Size
     private int trashCanSize;
@@ -71,6 +73,22 @@ public class GamePage extends AppCompatActivity {
     private int score = 0, highScore, timeCount, lives = 3;
     private SharedPreferences settings;
 
+    //show unlock
+    private boolean shown = true;
+    private boolean canshown = true;
+    private boolean cigarshown = true;
+    private boolean chipsshown = true;
+    private boolean eggsshown = true;
+    private boolean fishshown = true;
+    private boolean tireshown = true;
+    private boolean papershown = true;
+    private boolean milkshown = true;
+    private boolean leafshown = true;
+    private boolean plasticshown = true;
+    private boolean teabagshown = true;
+    private boolean wireshown = true;
+    private boolean tissueshown = true;
+    private boolean styroshown = true;
     //Timer
     private Timer timer;
     private Handler handler = new Handler();
@@ -94,6 +112,8 @@ public class GamePage extends AppCompatActivity {
     private SliderAdapter sliderAdapter;
     private ImageView mNextBtn;
     private int mCurrentPage;
+    private Boolean condition;
+    MainActivity mainActivity = new MainActivity();
 
 
     @Override
@@ -101,7 +121,7 @@ public class GamePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        condition = getIntent().getBooleanExtra("MUTE", false);
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
         mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
         instructionsFrame = (RelativeLayout) findViewById(R.id.instructionsFrame);
@@ -109,14 +129,13 @@ public class GamePage extends AppCompatActivity {
         exitConfirmLayout = (RelativeLayout) findViewById(R.id.exitConfirmLayout);
         pauseConfirmationLayout = (RelativeLayout) findViewById(R.id.pauseConfirmationLayout);
         mNextBtn = (ImageView) findViewById(R.id.nextBtn);
-        swipeRight = (GifImageView) findViewById(R.id.swipeRight);
         sliderAdapter = new SliderAdapter(this);
 
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         sound = new SoundPlayer(this);
-        mainBGMusic = MediaPlayer.create(this, R.raw.maingamesound);
-        homeBGMusic = MediaPlayer.create(this, R.raw.homesound);
+        mainBGMusic = MainActivity.mainBGMUSIC;
+        homeBGMusic = MainActivity.homeBGMUSIC;
 
 //        final Animation in = new AlphaAnimation(0.0f, 1.0f);
 //        in.setDuration(3000);
@@ -140,11 +159,15 @@ public class GamePage extends AppCompatActivity {
         picAbout = (ImageView) findViewById(R.id.picAbout);
         picRetry = (ImageView) findViewById(R.id.picRetry);
         picPause = (ImageView) findViewById(R.id.picPause);
+        settingsInGame = (ImageView) findViewById(R.id.settingsInGame);
+        over = (ImageView) findViewById(R.id.over);
 //        picChooser = (ImageView) findViewById(R.id.picChoose);
         picBio = (ImageView) findViewById(R.id.picBio);
         picNonBio = (ImageView) findViewById(R.id.picNonBio);
         gifKeyboard = (GifImageView) findViewById(R.id.gifKeyboard);
         gifJunk = (GifImageView) findViewById(R.id.gifJunk);
+        gameFrame2 = (GifImageView) findViewById(R.id.gameFrame2);
+        gameFrame1 = (GifImageView) findViewById(R.id.gameFrame1);
         lifeTwoGif = (GifImageView) findViewById(R.id.lifeTwoGif);
         lifeThreeGif = (GifImageView) findViewById(R.id.lifeThreeGif);
         leftBio = getResources().getDrawable(R.drawable.leftbio);
@@ -155,8 +178,13 @@ public class GamePage extends AppCompatActivity {
         btnNo = (ImageView) findViewById(R.id.btnNo);
         btnYes = (ImageView) findViewById(R.id.btnYes);
         btnRestart = (ImageView) findViewById(R.id.btnRestart);
+        btnExit = (ImageView) findViewById(R.id.btnExit);
         btnPlay = (ImageView) findViewById(R.id.btnPlay);
         life3 = getResources().getDrawable(R.drawable.life3);
+        life1 = getResources().getDrawable(R.drawable.life1);
+        life2 = getResources().getDrawable(R.drawable.life2);
+        life11 = getResources().getDrawable(R.drawable.life11);
+        life22 = getResources().getDrawable(R.drawable.life22);
 
         //Score
         scoreLabel = (TextView) findViewById(R.id.scoreLabel);
@@ -177,11 +205,61 @@ public class GamePage extends AppCompatActivity {
         score = myScore.getInt("score", 0);
 
 
+        //show unlock
+        SharedPreferences shown1 = this.getSharedPreferences("shown1", Context.MODE_PRIVATE);
+        shown = shown1.getBoolean("shown", true);
+
+        SharedPreferences shown2 = getSharedPreferences("shown2", Context.MODE_PRIVATE);
+        canshown = shown2.getBoolean("canshown",true);
+
+        SharedPreferences shown3 = getSharedPreferences("shown3", Context.MODE_PRIVATE);
+        cigarshown = shown3.getBoolean("cigarshown",true);
+
+        SharedPreferences shown4 = getSharedPreferences("shown4", Context.MODE_PRIVATE);
+        chipsshown = shown4.getBoolean("chipsshown",true);
+
+        SharedPreferences shown5 = getSharedPreferences("shown5", Context.MODE_PRIVATE);
+        eggsshown = shown5.getBoolean("eggsshown",true);
+
+        SharedPreferences shown6 = getSharedPreferences("shown6", Context.MODE_PRIVATE);
+        fishshown = shown6.getBoolean("fishshown",true);
+
+        SharedPreferences shown7 = getSharedPreferences("shown7", Context.MODE_PRIVATE);
+        tireshown = shown7.getBoolean("tireshown",true);
+
+        SharedPreferences shown8 = getSharedPreferences("shown8", Context.MODE_PRIVATE);
+        papershown = shown8.getBoolean("papershown",true);
+
+        SharedPreferences shown9 = getSharedPreferences("shown9", Context.MODE_PRIVATE);
+        milkshown = shown9.getBoolean("milkshown",true);
+
+        SharedPreferences shown10 = getSharedPreferences("shown10", Context.MODE_PRIVATE);
+        leafshown = shown10.getBoolean("leafshown",true);
+
+        SharedPreferences shown11 = getSharedPreferences("shown11", Context.MODE_PRIVATE);
+        plasticshown = shown11.getBoolean("plasticshown",true);
+
+        SharedPreferences shown12 = getSharedPreferences("shown12", Context.MODE_PRIVATE);
+        teabagshown = shown12.getBoolean("teabagshown",true);
+
+        SharedPreferences shown13 = getSharedPreferences("shown13", Context.MODE_PRIVATE);
+        wireshown = shown13.getBoolean("wireshown",true);
+
+        SharedPreferences shown14 = getSharedPreferences("shown14", Context.MODE_PRIVATE);
+        tissueshown = shown14.getBoolean("tissueshown",true);
+
+        SharedPreferences shown15 = getSharedPreferences("shown15", Context.MODE_PRIVATE);
+        styroshown = shown15.getBoolean("styroshown",true);
+
         //PLAY AND STOP SOUNDS
-//        homeBGMusic.stop();
-//        homeBGMusic.prepareAsync();
         mainBGMusic.start();
         mainBGMusic.setLooping(true);
+
+        if (!condition) {
+            mainBGMusic.setVolume(1, 1);
+        } else {
+            mainBGMusic.setVolume(0, 0);
+        }
 
         startLayout.setVisibility(View.INVISIBLE);
 
@@ -195,7 +273,9 @@ public class GamePage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                sound.playClickedSound();
+                if(!condition) {
+                    sound.playClickedSound();
+                }
 
                 mSlideViewPager.setCurrentItem(mCurrentPage + 1);
 
@@ -210,7 +290,10 @@ public class GamePage extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                        sound.playClickedSound();
+                        if(!condition) {
+                            sound.playClickedSound();
+                        }
+
                         bio = true;
 
                         chooserLayout.setVisibility(View.INVISIBLE);
@@ -260,7 +343,10 @@ public class GamePage extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        sound.playClickedSound();
+                        if(!condition) {
+                            sound.playClickedSound();
+                        }
+
                         bio = false;
 
                         // CHANGE TRASH IMAGE
@@ -315,7 +401,10 @@ public class GamePage extends AppCompatActivity {
             public void onClick(View view) {
 
                 //PLAY AND STOP SOUNDS
-                sound.playClickedSound();
+                if(!condition) {
+                    sound.playClickedSound();
+                }
+
                 homeBGMusic.stop();
                 homeBGMusic.prepareAsync();
                 mainBGMusic.start();
@@ -324,6 +413,8 @@ public class GamePage extends AppCompatActivity {
                 startLayout.setVisibility(view.INVISIBLE);
 
                 gameFrame.setBackground(life3);
+                gameFrame1.setVisibility(View.INVISIBLE);
+                gameFrame2.setVisibility(View.INVISIBLE);
                 chooserLayout.setVisibility(View.VISIBLE);
 
                 trashCan.setX(0.0f);
@@ -336,26 +427,73 @@ public class GamePage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                sound.playClickedSound();
+                if(!condition) {
+                    sound.playClickedSound();
+                }
+
                 exitConfirmLayout.setVisibility(View.VISIBLE);
 
                 btnYes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+//                        if(!condition) {
+//                            sound.playClickedSound();
+//                        }
+//
+//                        Intent intent = new Intent(Intent.ACTION_MAIN);
+//                        intent.addCategory(Intent.CATEGORY_HOME);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        intent.putExtra("MUTE2", condition);
+//                        finish();
+//                        System.exit(0);
+                        if(!condition) {
+                            sound.playClickedSound();
+                            sound.playGameOverSound();
+                        }
+                        mainBGMusic.stop();
+                        mainBGMusic.prepareAsync();
+                        homeBGMusic.start();
+                        homeBGMusic.setLooping(true);
                         finish();
-                        System.exit(0);
                     }
                 });
 
                 btnNo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sound.playClickedSound();
-                        exitConfirmLayout.setVisibility(View.GONE);
 
+//                        if(!condition) {
+//                            sound.playClickedSound();
+//                        }
+//
+//                        exitConfirmLayout.setVisibility(View.GONE);
+//
+//                        //picPause.setImageResource(R.drawable.pause);
+//                        if (start_flg && pause_flg == true) {
+//                            pause_flg = false;
+//                            picPause.setVisibility(View.VISIBLE);
+//                            timer = new Timer();
+//                            timer.schedule(new TimerTask() {
+//                                @Override
+//                                public void run() {
+//                                    if (start_flg) {
+//                                        handler.post(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                changePos();
+//                                            }
+//                                        });
+//                                    }
+//                                }
+//                            }, 0, 20);
+//
+//                        }
+
+                        if(!condition) {
+                            sound.playClickedSound();
+                        }
+                        exitConfirmLayout.setVisibility(View.GONE);
                         //picPause.setImageResource(R.drawable.pause);
                         if (start_flg && pause_flg == true) {
                             pause_flg = false;
@@ -407,8 +545,10 @@ public class GamePage extends AppCompatActivity {
         btnYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sound.playClickedSound();
-                sound.playGameOverSound();
+                if(!condition) {
+                    sound.playClickedSound();
+                    sound.playGameOverSound();
+                }
                 mainBGMusic.stop();
                 mainBGMusic.prepareAsync();
                 homeBGMusic.start();
@@ -420,7 +560,9 @@ public class GamePage extends AppCompatActivity {
         btnNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sound.playClickedSound();
+                if(!condition) {
+                    sound.playClickedSound();
+                }
                 exitConfirmLayout.setVisibility(View.GONE);
                 //picPause.setImageResource(R.drawable.pause);
                 if (start_flg && pause_flg == true) {
@@ -458,12 +600,19 @@ public class GamePage extends AppCompatActivity {
             timer = null;
 
             picPause.setVisibility(View.INVISIBLE);
+            settingsInGame.setVisibility(View.INVISIBLE);
             pauseConfirmationLayout.setVisibility(View.VISIBLE);
 
             btnPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if (!condition) {
+                        sound.playClickedSound();
+                    }
+
                     picPause.setVisibility(View.VISIBLE);
+                    settingsInGame.setVisibility(View.VISIBLE);
                     pauseConfirmationLayout.setVisibility(View.INVISIBLE);
                     pause_flg = false;
 
@@ -485,6 +634,23 @@ public class GamePage extends AppCompatActivity {
                 }
             });
 
+            btnExit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (!condition) {
+                        sound.playClickedSound();
+                        sound.playGameOverSound();
+                    }
+                    mainBGMusic.stop();
+                    mainBGMusic.prepareAsync();
+                    homeBGMusic.start();
+                    homeBGMusic.setLooping(true);
+                    finish();
+
+                }
+            });
+
             btnRestart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -493,16 +659,20 @@ public class GamePage extends AppCompatActivity {
 
                     pauseConfirmationLayout.setVisibility(View.INVISIBLE);
 
-                    sound.playClickedSound();
+                    if (!condition) {
+                        sound.playClickedSound();
+                    }
                     mainBGMusic.start();
                     mainBGMusic.setLooping(true);
 
+                    settingsInGame.setVisibility(View.INVISIBLE);
                     picPause.setVisibility(View.INVISIBLE);
                     startLayout.setVisibility(view.INVISIBLE);
                     scoreLabel.setVisibility(View.INVISIBLE);
                     trashCan.setVisibility(View.INVISIBLE);
-                    bomb.setVisibility(View.INVISIBLE);
                     plusPoints.setVisibility(View.INVISIBLE);
+                    plusLife.setVisibility(View.INVISIBLE);
+                    bomb.setVisibility(View.INVISIBLE);
                     ivFish.setVisibility(View.INVISIBLE);
                     ivCan.setVisibility(View.INVISIBLE);
                     ivBanana.setVisibility(View.INVISIBLE);
@@ -520,6 +690,8 @@ public class GamePage extends AppCompatActivity {
                     heart3.setVisibility(View.INVISIBLE);
                     heart4.setVisibility(View.INVISIBLE);
                     heart5.setVisibility(View.INVISIBLE);
+                    gameFrame1.setVisibility(View.INVISIBLE);
+                    gameFrame2.setVisibility(View.INVISIBLE);
 
                     gameFrame.setBackground(life3);
                     chooserLayout.setVisibility(View.VISIBLE);
@@ -599,6 +771,7 @@ public class GamePage extends AppCompatActivity {
         bomb.setVisibility(View.VISIBLE);
         scoreLabel.setVisibility(View.VISIBLE);
         picPause.setVisibility(View.VISIBLE);
+        settingsInGame.setVisibility(View.VISIBLE);
         heart3.setVisibility(View.VISIBLE);
         heart4.setVisibility(View.VISIBLE);
         heart5.setVisibility(View.VISIBLE);
@@ -712,7 +885,7 @@ public class GamePage extends AppCompatActivity {
             }
         } else {
             if (score % 2 == 1 && bananaY > frameHeight) {
-                ivBanana.setImageResource(R.drawable.sack); // tire
+                ivBanana.setImageResource(R.drawable.cigar2); // tire
             } else if (score % 2 == 0 && bananaY > frameHeight) {
                 ivBanana.setImageResource(R.drawable.tire2);
             }
@@ -720,6 +893,7 @@ public class GamePage extends AppCompatActivity {
 
         float bananaCenterX = bananaX + ivBanana.getWidth() / 2; // (x,y) xPos(is dulo sa left)
         float bananaBottomY = bananaY + ivBanana.getHeight(); // (x,y) YPos(is dulo sa left)
+
         if (hitCheck(bananaCenterX, bananaBottomY)) {
             bananaY = frameHeight + 100;
             score += 2;
@@ -728,6 +902,9 @@ public class GamePage extends AppCompatActivity {
         if (bananaY == 1300.0) { //1322.0 || bananaY == 1334.0 || bananaY == 1380.0
             loseLife();
         }
+
+//        if(score==11)
+
         if (bananaY > frameHeight && score <= 98) {
             if (timeCount % 2500 == 0) {
                 bananaY = -100; // POSITION INTERVAL
@@ -741,9 +918,9 @@ public class GamePage extends AppCompatActivity {
 
 
 //      Fish
-        if (score == 13) {
+        if (score == 13 || score == 11) {
 
-        } else if (score >= 10 && score != 13) {
+        } else if (score >= 10 && score != 13 && score != 11) {
             fishY += 7; // SPEED
         }
         float fishCenterX = fishX + ivFish.getWidth() / 2;
@@ -772,6 +949,7 @@ public class GamePage extends AppCompatActivity {
         if (score >= 30) {
             leafY += 9; // SPEED
         }
+
 
         float leafCenterX = leafX + ivLeaf.getWidth() / 2;
         float leafBottomY = leafY + ivLeaf.getHeight();
@@ -821,7 +999,7 @@ public class GamePage extends AppCompatActivity {
 
 
 //      Tissue
-        if (score >= 102) { //100
+        if (score >= 104) { //100 // 102 - 3330
             tissueY += 11;
         }
 
@@ -837,7 +1015,7 @@ public class GamePage extends AppCompatActivity {
         }
         if (tissueY > frameHeight) {
             if (score >= 63) {
-                if (timeCount % 3300 == 0) {
+                if (timeCount % 3330 == 0) { // 3300
                     tissueY = -100;
                     tissueX = (float) Math.floor(Math.random() * (frameWidth - ivTissue.getWidth()));
                 }
@@ -847,7 +1025,7 @@ public class GamePage extends AppCompatActivity {
         ivTissue.setY(tissueY);
 
 
-//      Cork
+//      Cork = KARTON
         if (score >= 53) {
             corkY += 9;
         }
@@ -890,7 +1068,7 @@ public class GamePage extends AppCompatActivity {
             if (score % 2 == 1 && score >= 30 && canY > frameHeight) {
                 ivCan.setImageResource(R.drawable.fish);
             } else if (score % 2 == 0 && score >= 30 && canY > frameHeight) {
-                ivCan.setImageResource(R.drawable.cigar);
+                ivCan.setImageResource(R.drawable.popsie);
             }
         }
 
@@ -924,7 +1102,7 @@ public class GamePage extends AppCompatActivity {
             }
         } else {
             if (score % 2 == 1 && score > 30 && chipsY > frameHeight) {
-                ivChips.setImageResource(R.drawable.tea); // tea
+                ivChips.setImageResource(R.drawable.tea2); // tea
             } else if (score % 2 == 0 && chipsY > frameHeight) {
                 ivChips.setImageResource(R.drawable.leaf2);
             }
@@ -948,8 +1126,6 @@ public class GamePage extends AppCompatActivity {
         ivChips.setX(chipsX);
         ivChips.setY(chipsY);
 
-
-        //  CHANGE IMAGE VARIABLE GET RESOURCE AND SPEED UP NALNG??
 
 //      Tire
         if (score >= 38) {
@@ -997,6 +1173,21 @@ public class GamePage extends AppCompatActivity {
         if (score >= 75) {
             plasticY += 11;
         }
+
+        if (bio == true) {
+            if (score % 2 == 1 && plasticY > frameHeight) {
+                ivPlastic.setImageResource(R.drawable.wire);
+            } else if (score % 2 == 0 && plasticY > frameHeight) {
+                ivPlastic.setImageResource(R.drawable.plastic);
+            }
+        } else {
+            if (score % 2 == 1 && plasticY > frameHeight) {
+                ivPlastic.setImageResource(R.drawable.popsie2);
+            } else if (score % 2 == 0 && plasticY > frameHeight) {
+                ivPlastic.setImageResource(R.drawable.tissue);
+            }
+        }
+
         float plasticCenterX = plasticX + ivPlastic.getWidth() / 2;
         float plasticBottomY = plasticY + ivPlastic.getHeight();
         if (hitCheck(plasticCenterX, plasticBottomY)) {
@@ -1056,8 +1247,9 @@ public class GamePage extends AppCompatActivity {
         }
 
 //        PLUS LIFE
-        if (score >= 28) {
-            plusLifeY += 10;
+
+        if (score >= 16) {
+            plusLifeY += 8;
         }
         float plusLifeCenterX = plusLifeX + plusLife.getWidth() / 2;
         float plusLifeBottomY = plusLifeY + plusLife.getHeight();
@@ -1066,9 +1258,9 @@ public class GamePage extends AppCompatActivity {
             addLife();
         }
         if (plusLifeY > frameHeight) {
-            if (timeCount % 60000 == 0) {
+            if (timeCount % 55000 == 0) {
                 plusLifeY = -100;
-                plusLifeX = (float) Math.floor(Math.random() * frameWidth - plusLife.getWidth());
+                plusLifeX = (float) Math.floor(Math.random() * (frameWidth - plusLife.getWidth()));
             }
         }
         plusLife.setX(plusLifeX);
@@ -1076,19 +1268,20 @@ public class GamePage extends AppCompatActivity {
 
 
 //      Bomb
-        if (score >= 60) {
+        if (score >= 40) {
             bombY += 8;
         }
         float bombCenterX = bombX + bomb.getWidth() / 2;
         float bombBottomY = bombY + bomb.getHeight();
         if (hitCheck(bombCenterX, bombBottomY)) {
             bombY = frameHeight + 100;
+            vibrator.vibrate(300);
             gameOver();
         }
         if (bombY > frameHeight) {
-            if (timeCount % 70000 == 0) {
+            if (timeCount % 60000 == 0) {
                 bombY = -100;
-                bombX = (float) Math.floor(Math.random() * frameWidth - bomb.getWidth());
+                bombX = (float) Math.floor(Math.random() * (frameWidth - bomb.getWidth()));
             }
         }
         bomb.setX(bombX);
@@ -1102,7 +1295,7 @@ public class GamePage extends AppCompatActivity {
         }
 
 //        HARD MODE
-        if (score >= 55) {
+        if (score >= 59) { // 55
             hardMode();
         }
 
@@ -1116,6 +1309,7 @@ public class GamePage extends AppCompatActivity {
         chipsY += 2; //3
         milkY += 2;
         plusPointsY += 2;
+
 
         //Toast.makeText(ActivityMain.this, "LeafY =  " + leafY + " frameheight " + frameHeight, Toast.LENGTH_SHORT).show();
 
@@ -1145,6 +1339,7 @@ public class GamePage extends AppCompatActivity {
         plusPointsY += 1;
         corkY += 2;
 
+
         //Toast.makeText(ActivityMain.this, "BanaY =  " + bananaY + " frameheight " + frameHeight, Toast.LENGTH_SHORT).show();
 
         if (bananaY == 1268.0) { //1588 , 1488.0 - magulo, 1480, 1468, 1340 - dati, 1257,
@@ -1170,7 +1365,9 @@ public class GamePage extends AppCompatActivity {
         int a = (int) (trashCanX + trashCanSize);
         if (trashCanX <= x && x <= trashCanX + trashCanSize && trashCanY <= y && y <= frameHeight - 170) { // OR frameheight - faceHeight
             // Toast.makeText(ActivityMain.this, "tcX: " + trashCanX + " X: " + x + "tcY: " + trashCanY + " Y: " + y , Toast.LENGTH_LONG).show();
-            sound.playHitSound();
+            if (!condition) {
+                sound.playHitSound();
+            }
             return true;
         }
         return false;
@@ -1184,10 +1381,16 @@ public class GamePage extends AppCompatActivity {
 
         if (lives == 2) {
             heart4.setVisibility(View.VISIBLE);
+//            gameFrame.setBackground(life22);
+//            gameFrame2.setImageResource(R.drawable.life22);
+            gameFrame2.setVisibility(View.VISIBLE);
+            gameFrame1.setVisibility(View.INVISIBLE);
             lifeThreeGif.setVisibility(View.INVISIBLE);
         } else if (lives == 3) {
             heart5.setVisibility(View.VISIBLE);
             lifeTwoGif.setVisibility(View.INVISIBLE);
+            gameFrame2.setVisibility(View.INVISIBLE);
+            gameFrame.setBackground(life3);
         } else {
             lives = 3;
         }
@@ -1196,7 +1399,9 @@ public class GamePage extends AppCompatActivity {
     public void loseLife() {
         lives--;
 
-        sound.playErrorSound();
+        if (!condition) {
+            sound.playErrorSound();
+        }
         vibrator.vibrate(300);
 
         final Animation in = new AlphaAnimation(0.0f, 1.0f);
@@ -1207,13 +1412,22 @@ public class GamePage extends AppCompatActivity {
             heart5.setVisibility(View.INVISIBLE);
             lifeTwoGif.setVisibility(View.VISIBLE);
             lifeTwoGif.setAnimation(in);
+//            gameFrame.setBackground(life2);
+            gameFrame2.setVisibility(View.VISIBLE);
+            gameFrame1.setVisibility(View.INVISIBLE);
+//            gameFrame2.setImageResource(R.drawable.life22);
         } else if (lives == 1) {
             heart4.setVisibility(View.INVISIBLE);
             heart5.setVisibility(View.INVISIBLE);
             lifeThreeGif.setVisibility(View.VISIBLE);
+//            gameFrame.setBackground(life1);
+//            gameFrame2.setImageResource(R.drawable.life11);
+            gameFrame1.setVisibility(View.VISIBLE);
+            gameFrame2.setVisibility(View.INVISIBLE);
             lifeThreeGif.setAnimation(in);
         } else if (lives < 1) {
             heart3.setVisibility(View.INVISIBLE);
+
             gameOver();
             lives = 3;
             //Toast.makeText(ActivityMain.this, "not catchy -3", Toast.LENGTH_LONG).show();
@@ -1226,10 +1440,18 @@ public class GamePage extends AppCompatActivity {
 
     public void gameOver() {
         //play and stop sounds
-        sound.playGameOverSound();
+        if (!condition) {
+            sound.playGameOverSound();
+        }
         mainBGMusic.stop();
         mainBGMusic.prepareAsync();
         homeBGMusic.start();
+
+        if (!condition) {
+            homeBGMusic.setVolume(1, 1);
+        } else {
+            homeBGMusic.setVolume(0, 0);
+        }
 
         // Stop timer
         timer.cancel();
@@ -1243,6 +1465,8 @@ public class GamePage extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        gameFrame2.setVisibility(View.INVISIBLE);
+        over.setVisibility(View.VISIBLE);
         startLayout.setVisibility(View.VISIBLE);
         gifKeyboard.setVisibility(View.INVISIBLE);
         gifJunk.setVisibility(View.INVISIBLE);
@@ -1253,6 +1477,7 @@ public class GamePage extends AppCompatActivity {
         picExit.setVisibility(View.VISIBLE);
         scoreLabel.setVisibility(View.INVISIBLE);
         picPause.setVisibility(View.INVISIBLE);
+        settingsInGame.setVisibility(View.INVISIBLE);
         picRetry.setVisibility(View.VISIBLE);
         trashCan.setVisibility(View.INVISIBLE);
         bomb.setVisibility(View.INVISIBLE);
@@ -1285,8 +1510,153 @@ public class GamePage extends AppCompatActivity {
         editor1.putInt("score", score);
         editor1.commit();
 
+        toast = Toast.makeText(this, "Achievement Unlocked!", Toast.LENGTH_SHORT);
+//        int i = 0;
+
+
+
+        if (score >= 10 && shown) {
+            toast.show();
+            shown = false;
+        }
+        if (score >= 25 && canshown) {
+            toast.show();
+            canshown = false;
+        }
+        if (score >= 40 && cigarshown) {
+            toast.show();
+            cigarshown = false;
+        }
+        if (score >= 65 && chipsshown) {
+            toast.show();
+            chipsshown = false;
+        }
+        if (score >= 80 && eggsshown) {
+            toast.show();
+            eggsshown = false;
+        }
+        if (score >= 100 && fishshown) {
+            toast.show();
+            fishshown = false;
+        }
+        if (score >= 125 && tireshown) {
+            toast.show();
+            tireshown = false;
+        }
+        if (score >= 150 && papershown) {
+            toast.show();
+            papershown = false;
+        }
+        if (score >= 200 && milkshown) {
+            toast.show();
+            milkshown = false;
+        }
+        if (score >= 250 && leafshown) {
+            toast.show();
+            leafshown = false;
+        }
+        if (score >= 300 && plasticshown) {
+            toast.show();
+            plasticshown = false;
+        }
+        if (score >= 350 && teabagshown) {
+            toast.show();
+            teabagshown = false;
+        }
+        if (score >= 400 && wireshown) {
+            toast.show();
+            wireshown = false;
+        }
+        if (score >= 450 && tissueshown) {
+            toast.show();
+            tissueshown = false;
+        }
+        if (score >= 500 && styroshown) {
+            toast.show();
+            styroshown = false;
+        }
+
+        SharedPreferences shown1 = getSharedPreferences("shown1", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = shown1.edit();
+        editor2.putBoolean("shown", shown);
+        editor2.commit();
+
+        SharedPreferences shown2 = getSharedPreferences("shown2", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor3 = shown2.edit();
+        editor3.putBoolean("canshown", canshown);
+        editor3.commit();
+
+        SharedPreferences shown3 = getSharedPreferences("shown3", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor4 = shown3.edit();
+        editor4.putBoolean("cigarshown", cigarshown);
+        editor4.commit();
+
+        SharedPreferences shown4 = getSharedPreferences("shown4", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor5 = shown4.edit();
+        editor5.putBoolean("chipsshown", chipsshown);
+        editor5.commit();
+
+
+        SharedPreferences shown5 = getSharedPreferences("shown5", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor6 = shown5.edit();
+        editor6.putBoolean("eggsshown", eggsshown);
+        editor6.commit();
+
+        SharedPreferences shown6 = getSharedPreferences("shown6", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor7 = shown6.edit();
+        editor7.putBoolean("fishshown", fishshown);
+        editor7.commit();
+
+        SharedPreferences shown7 = getSharedPreferences("shown7", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor8 = shown7.edit();
+        editor8.putBoolean("tireshown", tireshown);
+        editor8.commit();
+
+        SharedPreferences shown8 = getSharedPreferences("shown8", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor9 = shown8.edit();
+        editor9.putBoolean("papershown", papershown);
+        editor9.commit();
+
+        SharedPreferences shown9 = getSharedPreferences("shown9", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor10 = shown9.edit();
+        editor10.putBoolean("milkshown", milkshown);
+        editor10.commit();
+
+        SharedPreferences shown10 = getSharedPreferences("shown10", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor11 = shown10.edit();
+        editor11.putBoolean("leafshown", leafshown);
+        editor11.commit();
+
+        SharedPreferences shown11 = getSharedPreferences("shown11", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor12 = shown11.edit();
+        editor12.putBoolean("plasticshown", plasticshown);
+        editor12.commit();
+
+        SharedPreferences shown12 = getSharedPreferences("shown12", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor13 = shown12.edit();
+        editor13.putBoolean("teabagshown", teabagshown);
+        editor13.commit();
+
+        SharedPreferences shown13 = getSharedPreferences("shown13", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor14 = shown13.edit();
+        editor14.putBoolean("wireshown", wireshown);
+        editor14.commit();
+
+        SharedPreferences shown14 = getSharedPreferences("shown14", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor15 = shown14.edit();
+        editor15.putBoolean("tissueshown", tissueshown);
+        editor15.commit();
+
+        SharedPreferences shown15 = getSharedPreferences("shown15", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor16 = shown15.edit();
+        editor16.putBoolean("styroshown", styroshown);
+        editor16.commit();
+
+
         //Upadate high score
-        if (score > highScore) {
+        if (score > highScore)
+
+        {
             highScore = score;
             highScoreLabel.setText("BEST: " + highScore);
 
@@ -1294,9 +1664,8 @@ public class GamePage extends AppCompatActivity {
             editor.putInt("HIGH_SCORE", highScore);
             editor.commit();
         }
-
-
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -1346,16 +1715,14 @@ public class GamePage extends AppCompatActivity {
             if (i == 0) {
                 mNextBtn.setEnabled(false);
                 mNextBtn.setVisibility(View.GONE);
-//                swipeRight.setVisibility(View.VISIBLE);
+
                 // last slide
             } else if (i == mDots.length - 1) {
                 mNextBtn.setEnabled(true);
                 mNextBtn.setVisibility(View.VISIBLE);
-//                swipeRight.setVisibility(View.INVISIBLE);
             } else {
                 mNextBtn.setEnabled(false);
                 mNextBtn.setVisibility(View.GONE);
-//                swipeRight.setVisibility(View.VISIBLE);
             }
         }
 
@@ -1364,6 +1731,7 @@ public class GamePage extends AppCompatActivity {
 
         }
     };
+
 }
 
 

@@ -17,8 +17,7 @@
     <FrameLayout
         android:id="@+id/mainFrame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/life3">
+        android:layout_height="match_parent">
 
         <FrameLayout
             android:id="@+id/gameFrame"
@@ -26,18 +25,39 @@
             android:layout_height="match_parent"
             android:background="@drawable/life3">
 
-            <ImageView
-                android:id="@+id/ivFish"
-                android:layout_width="53dp"
-                android:layout_height="53dp"
-                android:src="@drawable/fish"
-                android:visibility="invisible" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <pl.droidsonroids.gif.GifImageView
+                    android:id="@+id/gameFrame2"
+                    android:layout_width="match_parent"
+                    android:layout_height="820dp"
+                    android:src="@drawable/life22"
+                    android:visibility="invisible" />
+
+                <pl.droidsonroids.gif.GifImageView
+                    android:id="@+id/gameFrame1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/life11"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
 
             <ImageView
                 android:id="@+id/ivLeaf"
                 android:layout_width="45dp"
                 android:layout_height="55dp"
                 android:src="@drawable/leaf2"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/ivFish"
+                android:layout_width="53dp"
+                android:layout_height="53dp"
+                android:src="@drawable/fish"
                 android:visibility="invisible" />
 
             <ImageView
@@ -98,9 +118,9 @@
 
             <ImageView
                 android:id="@+id/ivCork"
-                android:layout_width="28dp"
-                android:layout_height="45dp"
-                android:src="@drawable/cork"
+                android:layout_width="45dp"
+                android:layout_height="50dp"
+                android:src="@drawable/karton"
                 android:visibility="invisible" />
 
             <ImageView
@@ -157,6 +177,8 @@
 
         </FrameLayout>
 
+
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="94dp"
@@ -189,35 +211,45 @@
 
             <ImageView
                 android:id="@+id/heart5"
-                android:layout_width="33dp"
-                android:layout_height="33dp"
+                android:layout_width="37dp"
+                android:layout_height="37dp"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@+id/heart4"
                 android:layout_weight="1"
                 android:visibility="invisible"
-                app:srcCompat="@drawable/earth" />
+                app:srcCompat="@drawable/heartearth2" />
 
             <ImageView
                 android:id="@+id/heart4"
-                android:layout_width="33dp"
-                android:layout_height="33dp"
+                android:layout_width="37dp"
+                android:layout_height="37dp"
                 android:layout_alignParentTop="true"
                 android:layout_marginLeft="1dp"
                 android:layout_marginRight="1dp"
                 android:layout_toStartOf="@+id/heart3"
                 android:layout_weight="1"
                 android:visibility="invisible"
-                app:srcCompat="@drawable/earth" />
+                app:srcCompat="@drawable/heartearth2" />
 
             <ImageView
                 android:id="@+id/heart3"
-                android:layout_width="33dp"
-                android:layout_height="33dp"
+                android:layout_width="38dp"
+                android:layout_height="37dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
                 android:layout_weight="1"
                 android:visibility="invisible"
-                app:srcCompat="@drawable/earth" />
+                app:srcCompat="@drawable/heartearth2" />
+
+            <ImageView
+                android:id="@+id/settingsInGame"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/scoreLabel"
+                android:clickable="true"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/settings" />
 
         </RelativeLayout>
 
@@ -250,10 +282,11 @@
 
             <ImageView
                 android:id="@+id/nextBtn"
-                android:layout_width="139dp"
-                android:layout_height="62dp"
-                android:layout_above="@+id/dotsLayout"
+                android:layout_width="384dp"
+                android:layout_height="105dp"
+                android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
+                android:layout_marginBottom="92dp"
                 android:clickable="true"
                 android:src="@drawable/donee"
                 android:visibility="gone" />
@@ -279,25 +312,24 @@
 
             <ImageView
                 android:id="@+id/picBio"
-                android:layout_width="118dp"
-                android:layout_height="167dp"
+                android:layout_width="152dp"
+                android:layout_height="200dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginBottom="70dp"
-                android:layout_marginStart="66dp"
+                android:layout_marginStart="26dp"
                 android:clickable="true"
                 android:src="@drawable/rightbio" />
 
             <ImageView
                 android:id="@+id/picNonBio"
-                android:layout_width="118dp"
-                android:layout_height="167dp"
+                android:layout_width="152dp"
+                android:layout_height="200dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignTop="@+id/picBio"
-                android:layout_marginEnd="70dp"
+                android:layout_marginEnd="30dp"
                 android:clickable="true"
                 android:src="@drawable/leftnonb" />
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -314,9 +346,19 @@
                 android:src="@drawable/junk"
                 android:visibility="visible" />
 
+            <ImageView
+                android:id="@+id/over"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="100dp"
+                android:foregroundGravity="center_horizontal"
+                android:src="@drawable/gameover"
+                android:visibility="gone" />
+
             <pl.droidsonroids.gif.GifImageView
                 android:id="@+id/gifKeyboard"
-                android:layout_width="251dp"
+                android:layout_width="229dp"
                 android:layout_height="170dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
@@ -400,48 +442,55 @@
 
         <RelativeLayout
             android:id="@+id/pauseConfirmationLayout"
-            android:layout_width="183dp"
-            android:layout_height="92dp"
+            android:layout_width="346dp"
+            android:layout_height="234dp"
             android:layout_gravity="center_vertical|center"
-            android:background="@color/colorWhite"
+            android:background="@drawable/gamepause"
             android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 android:gravity="center_vertical|center">
 
                 <ImageView
-                    android:id="@+id/btnRestart"
-                    android:layout_width="75dp"
-                    android:layout_height="65dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
+                    android:id="@+id/btnExit"
+                    android:layout_width="91dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="25dp"
                     android:clickable="true"
-                    android:src="@drawable/retrybitch" />
+                    android:src="@drawable/exiticon2" />
 
                 <ImageView
                     android:id="@+id/btnPlay"
-                    android:layout_width="80dp"
-                    android:layout_height="70dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
+                    android:layout_width="91dp"
+                    android:layout_height="80dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="25dp"
                     android:clickable="true"
                     android:src="@drawable/playbitch" />
 
-            </LinearLayout>
+                <ImageView
+                    android:id="@+id/btnRestart"
+                    android:layout_width="91dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="25dp"
+                    android:clickable="true"
+                    android:src="@drawable/retrybitch" />
 
+            </LinearLayout>
 
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/exitConfirmLayout"
             android:layout_width="match_parent"
-            android:layout_height="293dp"
+            android:layout_height="310dp"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/areyou"
+            android:background="@drawable/quitgame"
             android:visibility="gone">
 
             <LinearLayout
@@ -459,7 +508,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:src="@drawable/nobtn" />
+                    android:src="@drawable/nobitch" />
 
                 <ImageView
                     android:id="@+id/btnYes"
@@ -468,7 +517,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:src="@drawable/yesbtn" />
+                    android:src="@drawable/yesbitch" />
 
 
             </LinearLayout>

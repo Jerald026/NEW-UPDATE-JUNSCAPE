@@ -10,6 +10,7 @@ import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,7 +40,17 @@ public class MainActivity extends AppCompatActivity {
 
     //Sound players
     private SoundPlayer sound;
-    private MediaPlayer mainBGMusic, homeBGMusic;
+    MediaPlayer mainBGMusic, homeBGMusic;
+    public static MediaPlayer mainBGMUSIC, homeBGMUSIC;
+
+    //Button
+    private Button btnSettings, btnMute, btnBack;
+
+    private RelativeLayout settingsFrame;
+
+    private boolean condition;
+    boolean isPlaying = false;
+
 
 
     @Override
@@ -47,15 +58,39 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try {
+            condition = getIntent().getBooleanExtra("MUTE2", false);
+            if (condition == false) {
+                mainBGMusic.setVolume(0, 0);
+                homeBGMusic.setVolume(0, 0);
+            } else {
+                mainBGMusic.setVolume(1, 1);
+                homeBGMusic.setVolume(1, 1);
+            }
+
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), condition + " " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         sound = new SoundPlayer(this);
         mainBGMusic = MediaPlayer.create(this, R.raw.maingamesound);
         homeBGMusic = MediaPlayer.create(this, R.raw.homesound);
+        mainBGMUSIC = mainBGMusic;
+        homeBGMUSIC = homeBGMusic;
 
         picStart = (ImageView) findViewById(R.id.picStart);
         picAchievements = (ImageView) findViewById(R.id.picAchievements);
         picAbout = (ImageView) findViewById(R.id.picAbout);
+
+        //Button
+        btnSettings = (Button) findViewById(R.id.btnSettings);
+        btnMute = (Button) findViewById(R.id.btnMute);
+        btnBack = (Button) findViewById(R.id.btnBack);
+
+        settingsFrame = (RelativeLayout) findViewById(R.id.SettingsLayout);
 
         //Score
         highScoreLabel = (TextView) findViewById(R.id.highScoreLabel);
@@ -86,10 +121,13 @@ public class MainActivity extends AppCompatActivity {
         picStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sound.playClickedSound();
+                if (!isPlaying) {
+                    sound.playClickedSound();
+                }
                 homeBGMusic.stop();
                 homeBGMusic.prepareAsync();
                 Intent intent = new Intent(MainActivity.this, GamePage.class);
+                intent.putExtra("MUTE", isPlaying);
                 startActivity(intent);
             }
         });
@@ -100,6 +138,45 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, About.class);
                 startActivity(intent);
+            }
+        });
+
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                settingsFrame.setVisibility(View.VISIBLE);
+
+                picStart.setVisibility(View.GONE);
+                picAbout.setVisibility(View.GONE);
+                picAchievements.setVisibility(View.GONE);
+
+                btnMute.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (isPlaying == false) {
+                            mainBGMusic.setVolume(0, 0);
+                            homeBGMusic.setVolume(0, 0);
+                            btnMute.setText("UNMUTE");
+                            isPlaying = true;
+                        } else {
+                            mainBGMusic.setVolume(1, 1);
+                            homeBGMusic.setVolume(1, 1);
+                            btnMute.setText("MUTE");
+                            isPlaying = false;
+                        }
+                    }
+                });
+            }
+        });
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                settingsFrame.setVisibility(View.GONE);
+                picStart.setVisibility(View.VISIBLE);
+                picAbout.setVisibility(View.VISIBLE);
+                picAchievements.setVisibility(View.VISIBLE);
             }
         });
 
