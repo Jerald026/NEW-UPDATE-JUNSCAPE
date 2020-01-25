@@ -454,14 +454,14 @@
             <RelativeLayout
                 android:id="@+id/SettingsLayout"
                 android:layout_width="226dp"
-                android:layout_height="108dp"
+                android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center_vertical|center_horizontal|center"
                 android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="135dp"
+                    android:layout_height="160dp"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_gravity="center"
@@ -473,6 +473,12 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="Mute" />
+
+                    <Button
+                        android:id="@+id/btnVibrate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Vibrate On" />
 
                     <Button
                         android:id="@+id/btnBack"
@@ -506,7 +512,7 @@
                     android:layout_height="73dp"
                     android:layout_marginTop="25dp"
                     android:clickable="true"
-                    android:src="@drawable/exiticon2"/>
+                    android:src="@drawable/exiticon2" />
 
                 <ImageView
                     android:id="@+id/btnPlay"

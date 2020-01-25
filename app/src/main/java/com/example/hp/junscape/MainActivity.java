@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Vibrator
     Vibrator vibrator;
+    public static Vibrator vibrate;
 
     //Score
     private TextView highScoreLabel;
@@ -44,12 +45,12 @@ public class MainActivity extends AppCompatActivity {
     public static MediaPlayer mainBGMUSIC, homeBGMUSIC;
 
     //Button
-    private Button btnSettings, btnMute, btnBack;
+    private Button btnSettings, btnMute, btnVibrate, btnBack;
 
     private RelativeLayout settingsFrame;
 
     private boolean condition;
-    boolean isPlaying = false;
+    boolean isPlaying, isVibrate = false;
 
 
 
@@ -58,22 +59,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            condition = getIntent().getBooleanExtra("MUTE2", false);
-            if (condition == false) {
-                mainBGMusic.setVolume(0, 0);
-                homeBGMusic.setVolume(0, 0);
-            } else {
-                mainBGMusic.setVolume(1, 1);
-                homeBGMusic.setVolume(1, 1);
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), condition + " " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        vibrate = vibrator;
 
         sound = new SoundPlayer(this);
         mainBGMusic = MediaPlayer.create(this, R.raw.maingamesound);
@@ -89,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         btnSettings = (Button) findViewById(R.id.btnSettings);
         btnMute = (Button) findViewById(R.id.btnMute);
         btnBack = (Button) findViewById(R.id.btnBack);
+        btnVibrate = (Button) findViewById(R.id.btnVibrate);
 
         settingsFrame = (RelativeLayout) findViewById(R.id.SettingsLayout);
 
@@ -128,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 homeBGMusic.prepareAsync();
                 Intent intent = new Intent(MainActivity.this, GamePage.class);
                 intent.putExtra("MUTE", isPlaying);
+                intent.putExtra("VIBRATE", isVibrate);
                 startActivity(intent);
             }
         });
@@ -167,16 +156,29 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-            }
-        });
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                settingsFrame.setVisibility(View.GONE);
-                picStart.setVisibility(View.VISIBLE);
-                picAbout.setVisibility(View.VISIBLE);
-                picAchievements.setVisibility(View.VISIBLE);
+                btnBack.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        settingsFrame.setVisibility(View.GONE);
+                        picStart.setVisibility(View.VISIBLE);
+                        picAbout.setVisibility(View.VISIBLE);
+                        picAchievements.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                btnVibrate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (isVibrate == false) {
+                            btnVibrate.setText("Vibrate Off");
+                            isVibrate = true;
+                        } else {
+                            btnVibrate.setText("Vibrate On");
+                            isVibrate = false;
+                        }
+                    }
+                });
             }
         });
 

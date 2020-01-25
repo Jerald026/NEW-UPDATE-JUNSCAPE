@@ -112,7 +112,7 @@ public class GamePage extends AppCompatActivity {
     private SliderAdapter sliderAdapter;
     private ImageView mNextBtn;
     private int mCurrentPage;
-    private Boolean condition;
+    private Boolean condition, condition2;
     MainActivity mainActivity = new MainActivity();
 
 
@@ -122,6 +122,7 @@ public class GamePage extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         condition = getIntent().getBooleanExtra("MUTE", false);
+        condition2 = getIntent().getBooleanExtra("VIBRATE", false);
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
         mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
         instructionsFrame = (RelativeLayout) findViewById(R.id.instructionsFrame);
@@ -131,7 +132,8 @@ public class GamePage extends AppCompatActivity {
         mNextBtn = (ImageView) findViewById(R.id.nextBtn);
         sliderAdapter = new SliderAdapter(this);
 
-        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        vibrator = MainActivity.vibrate;
+
 
         sound = new SoundPlayer(this);
         mainBGMusic = MainActivity.mainBGMUSIC;
@@ -526,7 +528,6 @@ public class GamePage extends AppCompatActivity {
     }
 
 
-    boolean twice;
 
     @Override
     public void onBackPressed() {
@@ -1275,7 +1276,9 @@ public class GamePage extends AppCompatActivity {
         float bombBottomY = bombY + bomb.getHeight();
         if (hitCheck(bombCenterX, bombBottomY)) {
             bombY = frameHeight + 100;
-            vibrator.vibrate(300);
+            if(!condition2) {
+                vibrator.vibrate(300);
+            }
             gameOver();
         }
         if (bombY > frameHeight) {
@@ -1402,7 +1405,10 @@ public class GamePage extends AppCompatActivity {
         if (!condition) {
             sound.playErrorSound();
         }
-        vibrator.vibrate(300);
+
+        if(!condition2) {
+            vibrator.vibrate(300);
+        }
 
         final Animation in = new AlphaAnimation(0.0f, 1.0f);
         in.setDuration(3000);
